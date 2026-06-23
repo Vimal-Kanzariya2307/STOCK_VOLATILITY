@@ -19,12 +19,12 @@ def fetch_stock_data(symbol):
             print("Returning cached data...")
             return cached_data
 
-    # Try NSE first, then BSE
+    # Try NSE first, then BSE, then fallback to raw symbol for US markets
     # If exchange already provided, use as is
     if "." in symbol:
         possible_symbols = [symbol]
     else:
-        possible_symbols = [f"{symbol}.NS", f"{symbol}.BO"]
+        possible_symbols = [f"{symbol}.NS", f"{symbol}.BO", symbol]
 
 
     data = None
