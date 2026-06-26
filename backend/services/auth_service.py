@@ -71,7 +71,7 @@ def create_token(user_id, email, name):
     }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
-
+# It is use  Varification token
 def verify_token(token):
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
