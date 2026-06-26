@@ -19,7 +19,7 @@ def get_db():
         _db.users.create_index([("email", ASCENDING)], unique=True)
     return _db
 
-
+# get user details by email
 def register_user(name, email, password):
     name = (name or "").strip()
     email = (email or "").strip().lower()
