@@ -47,7 +47,7 @@ def register_user(name, email, password):
     except DuplicateKeyError:
         return None, "Email already registered"
 
-
+#authenticate user with email and password
 def authenticate_user(email, password):
     email = (email or "").strip().lower()
     password = password or ""
