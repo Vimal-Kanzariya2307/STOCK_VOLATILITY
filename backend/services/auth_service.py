@@ -60,7 +60,7 @@ def authenticate_user(email, password):
     user_info = {"name": user["name"], "email": user["email"]}
     return token, user_info, None
 
-
+#create token for user with user_id, email and name
 def create_token(user_id, email, name):
     payload = {
         "sub": user_id,
