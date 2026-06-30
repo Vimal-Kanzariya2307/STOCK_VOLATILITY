@@ -257,3 +257,120 @@ function renderCharts(data) {
         }
     });
 }
+
+let riskModelChart;
+
+function renderRiskModelComparisonChart(canvasId, baselineVol, tunedVol, rollingVol, dates) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    if (riskModelChart) {
+        riskModelChart.destroy();
+    }
+
+    // Gradient background for tuned curve
+    const tunedGradient = ctx.createLinearGradient(0, 0, 0, 300);
+    tunedGradient.addColorStop(0, 'rgba(245, 158, 11, 0.15)'); // Amber semi-transparent
+    tunedGradient.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+    riskModelChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: "Rolling Volatility (30D)",
+                    data: rollingVol,
+                    borderColor: "#06b6d4", // Cyan
+                    borderWidth: 1.5,
+                    borderDash: [3, 3],
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.15
+                },
+                {
+                    label: "Baseline EWMA (λ=0.94)",
+                    data: baselineVol,
+                    borderColor: "#6366f1", // Indigo
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: false,
+                    tension: 0.15
+                },
+                {
+                    label: "Tuned EWMA (Custom λ)",
+                    data: tunedVol,
+                    borderColor: "#f59e0b", // Amber
+                    borderWidth: 2.5,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: tunedGradient,
+                    tension: 0.15
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    align: 'end'
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(11, 15, 25, 0.95)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#e5e7eb',
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxWidth: 8,
+                    boxPadding: 4,
+                    usePointStyle: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += (context.parsed.y * 100).toFixed(2) + '%';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.03)',
+                        borderColor: 'transparent'
+                    },
+                    ticks: {
+                        maxTicksLimit: 8,
+                        color: '#9ca3af'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        borderColor: 'transparent'
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        callback: function(value) {
+                            return (value * 100).toFixed(0) + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}

@@ -59,11 +59,24 @@ def auth_me():
 @app.route("/api/stock-details", methods=["GET"])
 def stock_details():
     symbol = request.args.get("symbol")
+    lambda_param = request.args.get("lambda")
 
     if not symbol:
         return jsonify({"error": "Symbol is required"}), 400
 
-    result = fetch_stock_data(symbol.upper())
+    # Parse and validate lambda parameter
+    lambda_val = 0.94
+    if lambda_param:
+        try:
+            val = float(lambda_param)
+            if 0.01 <= val <= 0.99:
+                lambda_val = val
+            else:
+                return jsonify({"error": "Lambda must be between 0.01 and 0.99"}), 400
+        except ValueError:
+            return jsonify({"error": "Invalid lambda parameter"}), 400
+
+    result = fetch_stock_data(symbol.upper(), lambda_=lambda_val)
 
     if result is None:
         return jsonify({"error": "Stock not found"}), 404
